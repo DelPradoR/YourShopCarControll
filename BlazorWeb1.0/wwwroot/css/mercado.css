@@ -1,0 +1,40 @@
+﻿.mercado-page {
+    min-height: 100vh;
+    padding: 40px;
+    background: linear-gradient(135deg, #f7f9fc, #e8f5ee);
+}
+
+.mercado-hero {
+    max-width: 950px;
+    padding: 45px;
+    border-radius: 22px;
+    background: white;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
+}
+
+.mercado-label {
+    display: inline-block;
+    margin-bottom: 14px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    background: #e6f7ee;
+    color: #16834a;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.mercado-hero h1 {
+    margin: 0;
+    font-size: 48px;
+    font-weight: 800;
+    color: #1f2937;
+}
+
+.mercado-description {
+    margin-top: 18px;
+    max-width: 720px;
+    font-size: 18px;
+    line-height: 1.7;
+    color: #4b5563;
+}

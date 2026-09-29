@@ -1,0 +1,205 @@
+﻿@page "/mercado"
+
+<PageTitle>Carrito de mercado</PageTitle>
+
+<div class="market-page">
+
+    <div class="market-hero">
+        <div>
+            <p class="market-label">Control de compras</p>
+            <h1>Mi carrito de mercado</h1>
+            <p class="market-description">
+                Organiza tu lista de compras, registra precios y controla cuánto llevas gastado.
+            </p>
+        </div>
+
+        <div class="market-total-card">
+            <span>Total gastado</span>
+            <strong>@TotalGastado.ToString("C")</strong>
+        </div>
+    </div>
+
+    <div class="market-info-grid">
+        <div class="market-card">
+            <label>Mercado / Tienda</label>
+            <input class="market-input" @bind="mercado" placeholder="Ej. Walmart, Ley, Soriana..." />
+        </div>
+
+        <div class="market-card">
+            <label>Fecha de compra</label>
+            <input class="market-input" type="date" @bind="fechaCompra" />
+        </div>
+
+        <div class="market-card">
+            <label>Presupuesto</label>
+            <input class="market-input" type="number" @bind="presupuesto" placeholder="0.00" />
+        </div>
+
+        <div class="market-card resumen">
+            <label>Restante</label>
+            <strong class="restante @(PresupuestoRestante < 0 ? "negativo" : "")">
+                @PresupuestoRestante.ToString("C")
+            </strong>
+        </div>
+    </div>
+
+    <div class="market-content">
+
+        <div class="market-form-card">
+            <h2>Agregar producto</h2>
+
+            <div class="form-grid">
+                <div>
+                    <label>Producto</label>
+                    <input class="market-input" @bind="nuevoProducto" placeholder="Ej. Leche, pan, huevo..." />
+                </div>
+
+                <div>
+                    <label>Cantidad</label>
+                    <input class="market-input" type="number" @bind="nuevaCantidad" />
+                </div>
+
+                <div>
+                    <label>Precio unitario</label>
+                    <input class="market-input" type="number" @bind="nuevoPrecio" />
+                </div>
+            </div>
+
+            <button class="btn-agregar" @onclick="AgregarProducto">
+                Agregar al carrito
+            </button>
+        </div>
+
+        <div class="market-list-card">
+            <div class="list-header">
+                <h2>Lista de compras</h2>
+                <span>@productos.Count producto(s)</span>
+            </div>
+
+            @if (productos.Count == 0)
+            {
+                <div class="empty-state">
+                    <h3>Tu carrito está vacío</h3>
+                    <p>Agrega productos para empezar a calcular tu compra.</p>
+                </div>
+            }
+            else
+            {
+                <div class="products-table">
+
+                    <div class="table-row table-head">
+                        <span>Comprado</span>
+                        <span>Producto</span>
+                        <span>Cantidad</span>
+                        <span>Precio</span>
+                        <span>Total</span>
+                        <span></span>
+                    </div>
+
+                    @foreach (var item in productos)
+                    {
+                        <div class="table-row @(item.Comprado ? "comprado" : "")">
+                            <span>
+                                <input type="checkbox" @bind="item.Comprado" />
+                            </span>
+
+                            <span>
+                                <input class="table-input" @bind="item.Nombre" />
+                            </span>
+
+                            <span>
+                                <input class="table-input small" type="number" @bind="item.Cantidad" />
+                            </span>
+
+                            <span>
+                                <input class="table-input small" type="number" @bind="item.PrecioUnitario" />
+                            </span>
+
+                            <span class="item-total">
+                                @item.Total.ToString("C")
+                            </span>
+
+                            <span>
+                                <button class="btn-eliminar" @onclick="() => EliminarProducto(item)">
+                                    X
+                                </button>
+                            </span>
+                        </div>
+                    }
+
+                </div>
+            }
+        </div>
+
+    </div>
+
+</div>
+
+@code {
+
+    private string mercado = "";
+
+
+    private decimal presupuesto = 0;
+
+    private string nuevoProducto = "";
+    private int nuevaCantidad = 1;
+    private decimal nuevoPrecio = 0;
+
+    private List<ProductoCompra> productos = new List<ProductoCompra>();
+    private DateTime fechaCompra = DateTime.Today;
+    private decimal TotalGastado
+    {
+        get
+        {
+            return productos.Sum(p => p.Total);
+        }
+    }
+
+    private decimal PresupuestoRestante
+    {
+        get
+        {
+            return presupuesto - TotalGastado;
+        }
+    }
+
+    private void AgregarProducto()
+    {
+        if (!string.IsNullOrWhiteSpace(nuevoProducto) && nuevaCantidad > 0)
+        {
+            productos.Add(new ProductoCompra
+            {
+                Nombre = nuevoProducto,
+                Cantidad = nuevaCantidad,
+                PrecioUnitario = nuevoPrecio,
+                Comprado = false
+            });
+
+            nuevoProducto = "";
+            nuevaCantidad = 1;
+            nuevoPrecio = 0;
+        }
+    }
+
+    private void EliminarProducto(ProductoCompra producto)
+    {
+        productos.Remove(producto);
+    }
+
+    public class ProductoCompra
+    {
+        public string Nombre { get; set; } = "";
+        public int Cantidad { get; set; }
+        public decimal PrecioUnitario { get; set; }
+        public bool Comprado { get; set; }
+
+        public decimal Total
+        {
+            get
+            {
+                return Cantidad * PrecioUnitario;
+            }
+        }
+    }
+}
